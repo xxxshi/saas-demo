@@ -1,0 +1,51 @@
+server:
+  port: 8002
+
+
+spring:
+  application:
+    name: saasTenant
+
+#  profiles:
+#    active: dev
+#    include:
+#      - swagger
+      # Uncomment to activate TLS for the dev profile
+      #- tls
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://47.99.204.53:3306/saas_tenant?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false
+    username: root
+    password: 12301
+    hikari:
+      auto-commit: false
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    database: MYSQL
+    show-sql: false
+    properties:
+      hibernate.id.new_generator_mappings: true
+      hibernate.connection.provider_disables_autocommit: true
+      hibernate.cache.use_second_level_cache: false
+      hibernate.cache.use_query_cache: false
+      hibernate.generate_statistics: false
+
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    appname: saasTenant
+  client:
+    enabled: true
+    healthcheck:
+      enabled: false
+    registerWithEureka: false
+    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8001/eureka
+
