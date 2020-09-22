@@ -19,4 +19,15 @@ public class TenantDataSourceInfoServiceTest {
 
         System.out.println(all);
     }
+
+    @Test
+    void getTenantDataSourceInfoByTenantAndServerName() {
+        String tenantCode = "1000";
+        String serverName = "customerCenter";
+        TenantDataSourceInfoDTO tenantDataSourceInfoDTO = tenantDataSourceInfoService.getTenantDataSourceInfoByTenantAndServerName(tenantCode, serverName);
+
+        System.out.println(tenantDataSourceInfoDTO);
+    }
+
+
 }

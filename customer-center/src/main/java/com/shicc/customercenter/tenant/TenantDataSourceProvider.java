@@ -51,6 +51,9 @@ public class TenantDataSourceProvider implements BeanPostProcessor {
     @Autowired
     private HikariProperties hikariProperties;
 
+    @Autowired
+    private TenantDataSourceService tenantDataSourceService;
+
 
     /**
      * 根据传进来的tenantCode决定返回的数据源
@@ -67,10 +70,9 @@ public class TenantDataSourceProvider implements BeanPostProcessor {
             log.info("getTenantDataSource:{}", tenantCode);
             return DATA_SOURCE_MAP.get(tenantCode);
         }
-        //todo map中不存在，则查询一次远程配置
+        //map中不存在，则查询一次远程配置
         if (!DATA_SOURCE_MAP.containsKey(tenantCode)) {
-            log.info("getTenantDataSource remote :{}", tenantCode);
-            return DATA_SOURCE_MAP.get(tenantCode);
+
         }
         if (DATA_SOURCE_MAP.isEmpty()) {
             log.warn("defaultDatasource doesn't init, please wait.");
@@ -102,7 +104,7 @@ public class TenantDataSourceProvider implements BeanPostProcessor {
      *
      * @param dataSourceInfo 连接信息
      */
-    public void addDataSource(TenantDataSourceInfoDTO dataSourceInfo) {
+    public  void addDataSource(TenantDataSourceInfoDTO dataSourceInfo) {
         log.debug("addDataSource:{}", dataSourceInfo);
         if (null == dataSourceInfo) {
             log.warn("datasource is empty");
@@ -208,7 +210,7 @@ public class TenantDataSourceProvider implements BeanPostProcessor {
      * @param tenantCode
      * @return
      */
-    public static String getDatabase(String tenantCode) {
+    public  String getDatabase(String tenantCode) {
         HikariDataSource dataSource = (HikariDataSource) getTenantDataSource(tenantCode);
         if (null == dataSource) {
             return null;

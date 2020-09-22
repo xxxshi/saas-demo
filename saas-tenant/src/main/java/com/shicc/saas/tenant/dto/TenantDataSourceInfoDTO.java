@@ -10,7 +10,7 @@ import java.util.Objects;
  * A DTO for the TenantDataSourceInfo entity.
  */
 @Data
-public class TenantDataSourceInfoDTO implements Serializable {
+public class TenantDataSourceInfoDTO extends KafkaBaseDTO implements Serializable {
 
     private Long id;
 

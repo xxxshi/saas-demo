@@ -64,6 +64,11 @@ public class TenantDataSourceInfoResource {
     }
 
 
+    /**
+     * 根据服务名称获得mysql连接信息
+     * @param serverName
+     * @return
+     */
     @GetMapping("/tenant-data-source-infos/serverName")
 //    @Timed
     public ResponseEntity<List<TenantDataSourceInfoDTO>> getTenantDataSourceInfoListByServerName(@RequestParam("serverName") String serverName) {
@@ -72,21 +77,26 @@ public class TenantDataSourceInfoResource {
         return ResponseEntity.ok(result);
     }
 
-
-    @GetMapping("/tenant-data-source-infos/{id}")
+    /**
+     * 根据服务名称,租户标志获得mysql连接信息
+     * @param serverName
+     * @return
+     */
+    @GetMapping("/tenant-data-source-infos/serverName/tenantCode")
 //    @Timed
-    public ResponseEntity<TenantDataSourceInfoDTO> getTenantDataSourceInfo(@PathVariable Long id) {
-        log.debug("REST request to get TenantDataSourceInfo : {}", id);
-        Optional<TenantDataSourceInfoDTO> tenantDataSourceInfoDTO = tenantDataSourceInfoService.findOne(id);
-        return ResponseEntity.ok(tenantDataSourceInfoDTO.get());
+    public ResponseEntity<TenantDataSourceInfoDTO> getTenantDataSourceInfoListByServerNameAndTenant(@RequestParam("serverName") String serverName,@RequestParam("tenantCode") String tenantCode) {
+        log.debug("request to getTenantDataSourceInfoListByServerName : {},{}", serverName, tenantCode);
+        TenantDataSourceInfoDTO result = tenantDataSourceInfoService.getTenantDataSourceInfoByTenantAndServerName(tenantCode, serverName);
+        return ResponseEntity.ok(result);
     }
 
 
-    @DeleteMapping("/tenant-data-source-infos/{id}")
-//    @Timed
-    public ResponseEntity<Void> deleteTenantDataSourceInfo(@PathVariable Long id) {
-        log.debug("REST request to delete TenantDataSourceInfo : {}", id);
-        tenantDataSourceInfoService.delete(id);
-        return ResponseEntity.ok().build();
+    @PutMapping("/tenant-data-source-infos/push")
+    public ResponseEntity<Boolean> pushTenantDataSourceInfo(@RequestParam("serverName") String serverName, @RequestParam("tenantCode") String tenantCode) {
+        log.debug("REST request to get pushTenantDataSourceInfo : {}, {}", serverName, tenantCode);
+        return ResponseEntity.ok(tenantDataSourceInfoService.push(tenantCode, serverName));
     }
+
+
+
 }

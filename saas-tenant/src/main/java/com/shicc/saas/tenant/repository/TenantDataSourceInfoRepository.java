@@ -14,9 +14,9 @@ import java.util.List;
 @Repository
 public interface TenantDataSourceInfoRepository extends JpaRepository<TenantDataSourceInfo, Long> {
 
-    List<TenantDataSourceInfo> findByServerNameAndStatusAndDeleteStatus(String serverName, Integer Status, Integer deleteStatus);
+    List<TenantDataSourceInfo> findByServerNameAndTypeAndStatusAndDeleteStatus(String serverName, String type, Integer Status, Integer deleteStatus);
 
-    TenantDataSourceInfo findTopByTenantCodeAndServerNameAndTypeAndDeleteStatus(String tenantCode, String serverName, String type, Integer deleteStatus);
+    TenantDataSourceInfo findTopByTenantCodeAndServerNameAndTypeAndStatusAndDeleteStatus(String tenantCode, String serverName, String type,Integer Status, Integer deleteStatus);
 
     List<TenantDataSourceInfo> findByTenantCodeAndDeleteStatus(String tenantCode, Integer deleteStatus);
 

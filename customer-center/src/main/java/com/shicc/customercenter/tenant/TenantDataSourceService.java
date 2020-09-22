@@ -34,7 +34,10 @@ public class TenantDataSourceService {
     private static final ParameterizedTypeReference<List<TenantDataSourceInfoDTO>> LIST_DATA_SOURCE_INFO = new ParameterizedTypeReference<List<TenantDataSourceInfoDTO>>() {
     };
 
-    private final String SERVER_NAME = "customerCenter";
+    private static final ParameterizedTypeReference<TenantDataSourceInfoDTO> DATA_SOURCE_INFO = new ParameterizedTypeReference<TenantDataSourceInfoDTO>() {
+    };
+
+    private static final String SERVER_NAME = "customerCenter";
 
 
     /**
@@ -46,7 +49,7 @@ public class TenantDataSourceService {
             return;
         }
         try {
-            List<TenantDataSourceInfoDTO> dataSourceInfoList = this.getRemoteDataSource(SERVER_NAME);
+            List<TenantDataSourceInfoDTO> dataSourceInfoList = this.getRemoteDataSource();
             if (CollectionUtils.isEmpty(dataSourceInfoList)) {
                 log.warn("remote dataSource is empty");
                 return;
@@ -83,11 +86,7 @@ public class TenantDataSourceService {
     public void initDatabase(TenantDataSourceInfoDTO dataSourceInfo) {
         log.info("init multi database :{} ", dataSourceInfo);
         try {
-            DataSource dataSource = null;
-            //尝试连接租户指定数据源
-            dataSource = tenantDataSourceProvider.genDataSource(dataSourceInfo);
-            dataSource.getConnection();
-            //initDatabaseBySpringLiquibase(dataSource);
+            addDataSource(dataSourceInfo);
         } catch (Exception e) {
             log.error("initDatabase failed,{}", e);
         }
@@ -95,13 +94,13 @@ public class TenantDataSourceService {
 
 
     /**
-     * 从远程获取数据源
+     * 根据服务名称从远程获取数据源
      *
      * @return
      */
-    public static List<TenantDataSourceInfoDTO> getRemoteDataSource(String serverName) {
+    public  List<TenantDataSourceInfoDTO> getRemoteDataSource() {
         Map<String, Object> parm = new HashMap();
-        parm.put("serverName", serverName);
+        parm.put("serverName", SERVER_NAME);
 
         RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
         RestTemplate restTemplate = restTemplateBuilder.build();

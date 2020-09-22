@@ -47,6 +47,28 @@ spring:
       hibernate.tenant_identifier_resolver: com.shicc.customercenter.tenant.MultiTenantIdentifierResolver
       hibernate.multi_tenant_connection_provider: com.shicc.customercenter.tenant.MultiTenantConnectionProviderImpl
 
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: saas-tenant
+      auto-commit-interval: 100
+      auto-offset-reset: latest
+      # true offset交给kafka来管理，offset进行默认的提交模式
+      # false offset交给Spring手工提交
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    topics:
+      tenant-data-source-info: ${application.kafka-topics.tenant-data-source-info}
+
+    bootstrap-servers: localhost:9092
+
+
+application:
+  kafka-topics:
+    tenant-data-source-info: tq-uaa-tenant-data-source-info-topic
 
 eureka:
   instance:

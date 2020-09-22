@@ -1,14 +1,19 @@
 package com.shicc.saas.tenant.service;
 
+import com.shicc.saas.tenant.config.ApplicationProperties;
 import com.shicc.saas.tenant.constant.TenantDataSourceStatus;
 import com.shicc.saas.tenant.domain.TenantDataSourceInfo;
+import com.shicc.saas.tenant.dto.KafkaBaseDTO;
 import com.shicc.saas.tenant.dto.TenantDataSourceInfoDTO;
 import com.shicc.saas.tenant.repository.TenantDataSourceInfoRepository;
 import com.shicc.saas.tenant.service.mapper.TenantDataSourceInfoMapper;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.kafka.common.internals.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +36,13 @@ public class TenantDataSourceInfoService {
 
     @Autowired
     private TenantDataSourceInfoMapper tenantDataSourceInfoMapper;
+
+    @Autowired
+    //@Lazy
+    private TopicMessageService topicMessageService;
+
+    @Autowired
+    private ApplicationProperties applicationProperties;
 
 
 
@@ -93,7 +105,7 @@ public class TenantDataSourceInfoService {
      */
     public List<TenantDataSourceInfoDTO> getTenantDataSourceInfoByServerName(String serverName) {
         log.debug("Request to get TenantDataSourceInfo by server name : {}", serverName);
-        return tenantDataSourceInfoRepository.findByServerNameAndStatusAndDeleteStatus(serverName, TenantDataSourceStatus.ENABLE.getValue(), NumberUtils.INTEGER_ZERO)
+        return tenantDataSourceInfoRepository.findByServerNameAndTypeAndStatusAndDeleteStatus(serverName, "mysql", TenantDataSourceStatus.ENABLE.getValue(), NumberUtils.INTEGER_ZERO)
             .stream().map(tenantDataSourceInfoMapper::toDto)
             .collect(Collectors.toCollection(LinkedList::new));
     }
@@ -105,9 +117,9 @@ public class TenantDataSourceInfoService {
      * @param serverName
      * @return
      */
-    public TenantDataSourceInfoDTO getTenantDataSourceInfoByTenantAndServerName(String tenantCode, String serverName, String type) {
-        log.debug("Request to get TenantDataSourceInfo by tenant code and server name  : {}, {}, type", tenantCode, serverName, type);
-        return tenantDataSourceInfoMapper.toDto(tenantDataSourceInfoRepository.findTopByTenantCodeAndServerNameAndTypeAndDeleteStatus(tenantCode, serverName,type, NumberUtils.INTEGER_ZERO));
+    public TenantDataSourceInfoDTO getTenantDataSourceInfoByTenantAndServerName(String tenantCode, String serverName) {
+        log.debug("Request to get TenantDataSourceInfo by tenant code and server name  : {}, {}, type", tenantCode, serverName);
+        return tenantDataSourceInfoMapper.toDto(tenantDataSourceInfoRepository.findTopByTenantCodeAndServerNameAndTypeAndStatusAndDeleteStatus(tenantCode, serverName, "mysql", TenantDataSourceStatus.ENABLE.getValue(), NumberUtils.INTEGER_ZERO));
     }
 
     /**
@@ -135,5 +147,17 @@ public class TenantDataSourceInfoService {
         return tenantDataSourceInfoRepository.findByTenantCodeAndStatusAndDeleteStatus(tenantCode, status, NumberUtils.INTEGER_ZERO)
             .stream().map(tenantDataSourceInfoMapper::toDto)
             .collect(Collectors.toCollection(LinkedList::new));
+    }
+
+    /**
+     * 将变动的数据源下发到对应的微服务
+     * @param serverName
+     * @param tenantCode
+     */
+    public Boolean push(String tenantCode,String serverName) {
+        TenantDataSourceInfoDTO tenantDataSourceInfoDTO = this.getTenantDataSourceInfoByTenantAndServerName(tenantCode, serverName);
+        tenantDataSourceInfoDTO.setTenantCode(tenantCode);
+        topicMessageService.sendSync(applicationProperties.getKafkaTopics().getTenantDataSourceInfo(), tenantDataSourceInfoDTO);
+        return Boolean.TRUE;
     }
 }
