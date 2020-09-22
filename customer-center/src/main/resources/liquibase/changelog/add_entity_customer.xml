@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <property name="now" value="now()" dbms="h2"/>
+
+    <property name="now" value="now()" dbms="mysql"/>
+    <property name="autoIncrement" value="true"/>
+
+    <property name="floatType" value="float4" dbms="postgresql, h2"/>
+    <property name="floatType" value="float" dbms="mysql, oracle, mssql"/>
+
+
+
+    <changeSet id="20200922160201" author="shicc">
+        <sql>
+            CREATE TABLE `customer` (
+            `id` bigint(20) NOT NULL AUTO_INCREMENT,
+            `customer_id` bigint(20) DEFAULT NULL,
+            `nick` varchar(255) DEFAULT NULL,
+            `password` varchar(255) DEFAULT NULL,
+            `gmt_create` timestamp NULL DEFAULT NULL,
+            `gmt_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            `type` int(11) NOT NULL,
+            `phone_num` bigint(20) DEFAULT NULL,
+            `head_icon` varchar(255) DEFAULT NULL,
+            `real_name` varchar(64) DEFAULT NULL,
+            `identity_card` varchar(128) DEFAULT NULL,
+            PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB AUTO_INCREMENT=180 DEFAULT CHARSET=utf8mb4 COMMENT='test';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

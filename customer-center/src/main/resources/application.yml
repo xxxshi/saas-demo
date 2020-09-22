@@ -1,6 +1,8 @@
 server:
   port: 8003
 
+liquibase:
+  enabled: true
 
 spring:
   application:
@@ -12,6 +14,7 @@ spring:
       #      - swagger
       # Uncomment to activate TLS for the dev profile
     #- tls
+
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://47.99.204.53:3306/customer_center?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false

@@ -1,5 +1,6 @@
 package com.shicc.customercenter.tenant;
 
+import liquibase.integration.spring.SpringLiquibase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,8 @@ public class TenantConfiguration  implements ApplicationRunner, ServletContextIn
     private static final Logger log = LoggerFactory.getLogger(TenantConfiguration.class);
 
 
-    @Value("${liquibase.enable:false}")
-    private boolean liquibaseEnable;
+    @Value("${liquibase.enabled}")
+    private boolean liquibaseEnable = false;
 
     @Autowired
     @Lazy
@@ -47,6 +48,9 @@ public class TenantConfiguration  implements ApplicationRunner, ServletContextIn
 
     @Autowired
     private DataSource dataSource;
+
+    @Autowired(required = false)
+    private LiquibaseProperties liquibaseProperties;
 
 
     @Value("${tenancy.interceptor.excludes:}")
@@ -74,6 +78,24 @@ public class TenantConfiguration  implements ApplicationRunner, ServletContextIn
         } else {
             log.debug("defaultDatasource has init success.");
         }
+    }
+
+    @Bean("tenantLiquibase")
+    public SpringLiquibase tenantLiquibase() {
+        SpringLiquibase liquibase = new TenantSpringLiquibase();
+        liquibase.setChangeLog("classpath:liquibase/master.xml");
+        liquibase.setShouldRun(liquibaseEnable);
+        if (null == liquibaseProperties) {
+            return liquibase;
+        }
+        //todo liquibaseProperties一直是null，暂时不影响使用, 待排查原因
+        liquibase.setContexts(liquibaseProperties.getContexts());
+        liquibase.setDefaultSchema(liquibaseProperties.getDefaultSchema());
+        liquibase.setDropFirst(liquibaseProperties.isDropFirst());
+        liquibase.setChangeLogParameters(liquibaseProperties.getParameters());
+        Boolean shouldRun = liquibaseEnable || liquibaseProperties.isEnabled();
+        liquibase.setShouldRun(shouldRun);
+        return liquibase;
     }
 
 }

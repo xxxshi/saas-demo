@@ -6,6 +6,10 @@ spring:
   application:
     name: saasTenant
 
+  liquibase:
+    enabled: true
+    change-log: classpath:liquibase/master.xml
+
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://47.99.204.53:3306/saas_tenant?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false
@@ -72,6 +76,8 @@ eureka:
     fetchRegistry: false
     serviceUrl:
       defaultZone: http://127.0.0.1:8001/eureka
+
+
 
 
 

@@ -59,10 +59,6 @@ public class TenantDataSourceKafkaListener {
             log.debug("is not this server:{} notify.", APP_NAME);
             return;
         }
-//        if (tenantDataSourceService.checkDataSource(dataSourceInfo.getTenantCode(), dataSourceInfo.getType())) {
-//            log.info("tenant datasource is exist");
-//            return;
-//        }
         tenantDataSourceService.initDatabase(dataSourceInfo);
 
     }
