@@ -1,3 +1,18 @@
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    appname: customerCenter
+  client:
+    enabled: true
+    healthcheck:
+      enabled: false
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8001/eureka
+
+
 server:
   port: 8003
 
@@ -73,17 +88,5 @@ application:
   kafka-topics:
     tenant-data-source-info: tq-uaa-tenant-data-source-info-topic
 
-eureka:
-  instance:
-    prefer-ip-address: true
-    appname: customerCenter
-  client:
-    enabled: true
-    healthcheck:
-      enabled: false
-    registerWithEureka: false
-    fetchRegistry: false
-    serviceUrl:
-      defaultZone: http://127.0.0.1:8001/eureka
 
 

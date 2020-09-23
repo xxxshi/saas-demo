@@ -1,7 +1,6 @@
 package com.shicc.customercenter.tenant;
 
 import liquibase.integration.spring.SpringLiquibase;
-import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -20,7 +18,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import javax.sql.DataSource;
-import java.net.URI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.shicc.customercenter.tenant.TenantConfigProperties.DEFAULT_REQUEST;
+import static com.shicc.customercenter.tenant.TenantRemote.TenantMethods.QUERY_ALL_DATA_SOURCE;
 import static org.springframework.http.HttpMethod.GET;
 
 @Service
@@ -58,15 +57,23 @@ public class TenantDataSourceService {
     private static final ParameterizedTypeReference<TenantDataSourceInfoDTO> DATA_SOURCE_INFO = new ParameterizedTypeReference<TenantDataSourceInfoDTO>() {
     };
 
-    @Value("${eureka.instance.appname}")
-    private String APP_NAME;
-
     @Autowired
     @Qualifier("tenantLiquibase")
     private SpringLiquibase tenantLiquibase;
 
     @Autowired(required = false)
     private LiquibaseProperties liquibaseProperties;
+
+    @Value("${eureka.instance.appname}")
+    private String APP_NAME;
+    private final String BASE_URL;
+    private final RestTemplate REST_TEMPLATE;
+
+    public TenantDataSourceService(TenantConfigProperties tenantConfigProperties) {
+        this.APP_NAME = tenantConfigProperties.getAppName();
+        this.BASE_URL = tenantConfigProperties.getSaasTenantBaseUrl();
+        this.REST_TEMPLATE = tenantConfigProperties.getUaaRestTemplate();
+    }
 
 
     /**
@@ -117,18 +124,26 @@ public class TenantDataSourceService {
      * @return
      */
     public  List<TenantDataSourceInfoDTO> getRemoteDataSource() {
-        Map<String, Object> parm = new HashMap();
-        parm.put("serverName", APP_NAME);
+        List<TenantDataSourceInfoDTO> result = REST_TEMPLATE.exchange(getRequestUri(QUERY_ALL_DATA_SOURCE, APP_NAME), GET, DEFAULT_REQUEST, LIST_DATA_SOURCE_INFO).getBody();
 
-        RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
-        RestTemplate restTemplate = restTemplateBuilder.build();
-        HttpHeaders headers = new HttpHeaders();
-        HttpEntity<?> formEntity = new HttpEntity<>(null, headers);
+//        String url = "http://localhost:8002/api/tenant-data-source-infos/serverName?serverName={serverName}";
+//        List<TenantDataSourceInfoDTO> result = restTemplate.exchange(url, GET, formEntity, LIST_DATA_SOURCE_INFO, parm).getBody();
 
-        String url = "http://localhost:8002/api/tenant-data-source-infos/serverName?serverName={serverName}";
-
-        List<TenantDataSourceInfoDTO> result = restTemplate.exchange(url, GET, formEntity, LIST_DATA_SOURCE_INFO, parm).getBody();
         return result;
+    }
+
+    /**
+     * 获取请求url
+     *
+     * @param method
+     * @param replace
+     * @return
+     */
+    private String getRequestUri(String method, Object... replace) {
+        if (null == replace) {
+            return BASE_URL + method;
+        }
+        return BASE_URL + String.format(method, replace);
     }
 
 

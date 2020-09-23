@@ -1,10 +1,26 @@
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    appname: saastenant
+
+  client:
+    enabled: true
+    healthcheck:
+      enabled: false
+    registerWithEureka: true
+    #该服务是否可以被其它服务发现
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8001/eureka
+
 server:
   port: 8002
 
 
 spring:
   application:
-    name: saasTenant
+    name: saastenant
 
   liquibase:
     enabled: true
@@ -63,19 +79,6 @@ application:
       # Uncomment to activate TLS for the dev profile
       #- tl
 
-
-eureka:
-  instance:
-    prefer-ip-address: true
-    appname: saasTenant
-  client:
-    enabled: true
-    healthcheck:
-      enabled: false
-    registerWithEureka: false
-    fetchRegistry: false
-    serviceUrl:
-      defaultZone: http://127.0.0.1:8001/eureka
 
 
 

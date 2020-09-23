@@ -69,9 +69,9 @@ public class TenantDataSourceInfoResource {
      * @param serverName
      * @return
      */
-    @GetMapping("/tenant-data-source-infos/serverName")
+    @GetMapping("/tenant-data-source-infos/serverName/{serverName}")
 //    @Timed
-    public ResponseEntity<List<TenantDataSourceInfoDTO>> getTenantDataSourceInfoListByServerName(@RequestParam("serverName") String serverName) {
+    public ResponseEntity<List<TenantDataSourceInfoDTO>> getTenantDataSourceInfoListByServerName(@PathVariable("serverName") String serverName) {
         log.debug("request to getTenantDataSourceInfoListByServerName : {}", serverName);
         List<TenantDataSourceInfoDTO> result = tenantDataSourceInfoService.getTenantDataSourceInfoByServerName(serverName);
         return ResponseEntity.ok(result);
