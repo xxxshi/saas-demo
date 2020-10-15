@@ -9,7 +9,7 @@ eureka:
     healthcheck:
       enabled: false
     registerWithEureka: true
-    #该服务是否可以被其它服务发现
+    #是否去去注册中心获取其他服务的地址
     fetchRegistry: true
     serviceUrl:
       defaultZone: http://127.0.0.1:8001/eureka

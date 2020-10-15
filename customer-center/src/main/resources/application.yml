@@ -7,8 +7,9 @@ eureka:
     enabled: true
     healthcheck:
       enabled: false
-    registerWithEureka: true
-    fetchRegistry: true
+    registerWithEureka: false
+    #是否去去注册中心获取其他服务的地址
+    fetchRegistry: false
     serviceUrl:
       defaultZone: http://127.0.0.1:8001/eureka
 
@@ -82,6 +83,16 @@ spring:
       tenant-data-source-info: ${application.kafka-topics.tenant-data-source-info}
 
     bootstrap-servers: localhost:9092
+
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password:
+    pool:
+      max-idle: 10
+      min-idle: 0
+      max-active: 16
+      max-wait: -1
 
 
 application:

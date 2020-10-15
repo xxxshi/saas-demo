@@ -15,6 +15,7 @@ public class TenantInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
         String tenant = request.getParameter("tenant");
         if(StringUtils.isBlank(tenant)){
             response.sendRedirect("/login.html");
